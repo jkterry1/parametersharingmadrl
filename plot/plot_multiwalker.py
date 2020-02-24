@@ -30,23 +30,23 @@ plt.plot(data[:, 0], data[:, 1], label='A2C')
 df = pd.read_csv(os.path.join(data_path,'APEX_DDPG.csv'))
 df = df[['episodes_total', "episode_reward_mean"]]
 data = df.to_numpy()
-plt.plot(data[:, 0], 3*data[:, 1], label='ApeX-DDPG')
+plt.plot(data[:, 0], data[:, 1], label='ApeX-DDPG')
 
 df = pd.read_csv(os.path.join(data_path,'IMPALA.csv'))
 df = df[['episodes_total', "episode_reward_mean"]]
 data = df.to_numpy()
-plt.plot(data[:, 0], 3*data[:, 1], label='IMPALA')
+plt.plot(data[:, 0], data[:, 1], label='IMPALA')
 
 df = pd.read_csv(os.path.join(data_path, 'PPO1.csv'))
 df = df[['episodes_total', "episode_reward_mean"]]
 data = df.to_numpy()
-plt.plot(data[:, 0], 3*data[:, 1], label='PPO')
+plt.plot(data[:, 0], data[:, 1], label='PPO')
 
 df = pd.read_csv(os.path.join(data_path,'TD3.csv'))
 df = df[['episodes_total', "episode_reward_mean"]]
 data = df.to_numpy()
 filtered = scipy.signal.savgol_filter(data[:, 1],int(len(data[:, 1])/50),5)
-plt.plot(data[:, 0], 3*data[:, 1], label='TD3')
+plt.plot(data[:, 0], data[:, 1], label='TD3')
 
 plt.plot(np.array([0,60000]),np.array([-102.05,-102.05]), label='Random')
 
