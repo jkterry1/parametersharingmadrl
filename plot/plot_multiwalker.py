@@ -7,25 +7,25 @@ from scipy import signal
 
 plt.rcParams["font.family"] = "serif"
 
-plt.figure(figsize=(6.5, 3.5)) 
+plt.figure(figsize=(6.5, 3.5))
 data_path = "data/multi_walker/"
 
-data = np.genfromtxt(os.path.join(data_path,'gupta_ddpg.csv'), delimiter=',')
-plt.plot(data[:, 0], data[:, 1], label='DDPG')
+data = np.genfromtxt(os.path.join(data_path, 'gupta_ddpg.csv'), delimiter=',')
+plt.plot(data[:, 0], data[:, 1], '--', label='DDPG')
 
-data = np.genfromtxt(os.path.join(data_path,'gupta_trpo.csv'), delimiter=',')
-plt.plot(data[:, 0], data[:, 1], label='TRPO')
+data = np.genfromtxt(os.path.join(data_path, 'gupta_trpo.csv'), delimiter=',')
+plt.plot(data[:, 0], data[:, 1], '--', label='TRPO')
 
 df = pd.read_csv(os.path.join(data_path, 'SAC.csv'))
 df = df[['episodes_total', "episode_reward_mean"]]
 data = df.to_numpy()
-filtered = scipy.signal.savgol_filter(data[:, 1],int(len(data[:, 1])/50),4)
+filtered = scipy.signal.savgol_filter(data[:, 1], int(len(data[:, 1])/50), 4)
 plt.plot(data[:, 0], data[:, 1], label='SAC')
 
 df = pd.read_csv(os.path.join(data_path,'A2C.csv'))
 df = df[['episodes_total', "episode_reward_mean"]]
 data = df.to_numpy()
-plt.plot(data[:, 0], data[:, 1], label='A2C')
+plt.plot(data[:, 0], data[:, 1], '--', label='A2C')
 
 df = pd.read_csv(os.path.join(data_path,'APEX_DDPG.csv'))
 df = df[['episodes_total', "episode_reward_mean"]]
