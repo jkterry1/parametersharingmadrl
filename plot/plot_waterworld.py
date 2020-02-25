@@ -11,7 +11,7 @@ plt.figure(figsize=(6.5, 3.5))
 data_path = "data/waterworld/"
 
 data = np.genfromtxt(os.path.join(data_path,'gupta_trpo.csv'), delimiter=',')
-plt.plot(data[:, 0], data[:, 1], label='TRPO')
+plt.plot(data[:, 0], data[:, 1], '--', label='TRPO')
 
 df = pd.read_csv(os.path.join(data_path,'a2c.csv'))
 df = df[['episodes_total', "episode_reward_mean"]]
@@ -27,7 +27,7 @@ plt.plot(data[:, 0], filtered, label='SAC')
 df = pd.read_csv(os.path.join(data_path,'apex_ddpg_2.csv'))
 df = df[['episodes_total', "episode_reward_mean"]]
 data = df.to_numpy()
-plt.plot(data[:, 0], data[:, 1], label='ApeX-DDPG')
+plt.plot(data[:, 0], data[:, 1], '--', label='ApeX-DDPG')
 
 df = pd.read_csv(os.path.join(data_path,'impala.csv'))
 df = df[['episodes_total', "episode_reward_mean"]]
