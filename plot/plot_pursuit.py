@@ -5,11 +5,11 @@ import os
 
 plt.rcParams["font.family"] = "serif"
 
-plt.figure(figsize=(6.5, 3.5)) 
+plt.figure(figsize=(6.5, 3.5))
 data_path = "data/pursuit/"
 
 data = np.genfromtxt(os.path.join(data_path,'gupta_trpo.csv'), delimiter=',')
-plt.plot(data[:, 0], data[:, 1], label='TRPO')
+plt.plot(data[:, 0], data[:, 1], '--', label='TRPO')
 
 data = np.genfromtxt(os.path.join(data_path,'gupta_dqn.csv'), delimiter=',')
 plt.plot(data[:, 0], data[:, 1], label='DQN')
@@ -22,7 +22,7 @@ plt.plot(data[:, 0], data[:, 1]/8, label='A2C')
 df = pd.read_csv(os.path.join(data_path, 'dqn_1.csv'))
 df = df[['episodes_total', "episode_reward_mean"]]
 data = df.to_numpy()
-plt.plot(data[:, 0], data[:, 1]/8, label='DD-DQN')
+plt.plot(data[:, 0], data[:, 1]/8, '--', label='DD-DQN')
 
 df = pd.read_csv(os.path.join(data_path,'impala_1.csv'))
 df = df[['episodes_total', "episode_reward_mean"]]
