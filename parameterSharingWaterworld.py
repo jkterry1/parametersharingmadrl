@@ -163,7 +163,6 @@ if __name__ == "__main__":
     )
     """
     
-    """
     tune.run(
         "APEX_DDPG",
         stop={"episodes_total": 60000},
@@ -187,9 +186,7 @@ if __name__ == "__main__":
     
             "n_step": 3,
             "lr": .0001,
-            "exploration_fraction": .1,
             "prioritized_replay_alpha": 0.5,
-            "beta_annealing_fraction": 1.0,
             "final_prioritized_replay_beta": 1.0,
             "target_network_update_freq": 50000,
             "timesteps_per_iteration": 25000,
@@ -203,7 +200,6 @@ if __name__ == "__main__":
             },
         },
     )
-    """
     
     """
     tune.run(
@@ -240,7 +236,8 @@ if __name__ == "__main__":
         },
     )
     """
-    
+   
+    """
     tune.run(
         "SAC",
         stop={"episodes_total": 60000},
@@ -294,3 +291,4 @@ if __name__ == "__main__":
             },
         },
     )
+    """
