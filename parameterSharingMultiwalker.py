@@ -54,6 +54,7 @@ policy_ids = list(policies.keys())
 # DQN and Apex-DQN do not work with continuous actions
 if __name__ == "__main__":
     tune.run(
+        """
         "PPO",
         stop={"episodes_total": 60000},
         checkpoint_freq=10,
@@ -93,6 +94,7 @@ if __name__ == "__main__":
             },
         },
     )
+    """
     
     """
     tune.run(
@@ -294,3 +296,33 @@ if __name__ == "__main__":
         },
     )
     """
+    
+    # plain DDPG
+    tune.run(
+        "DDPG",
+        stop={"episodes_total": 60000},
+        checkpoint_freq=10,
+        config={
+            # Enviroment specific
+            "env": "multiwalker",
+            # General
+            "log_level": "ERROR",
+            "num_gpus": 1,
+            "num_workers": 8,
+            "num_envs_per_worker": 8,
+            "learning_starts": 5000,
+            "buffer_size": int(1e5),
+            "compress_observations": True,
+            "sample_batch_size": 20,
+            "train_batch_size": 512,
+            "gamma": .99,
+            "critic_hiddens": [256, 256],
+            "pure_exploration_steps": 5000,
+            # Method specific
+            "multiagent": {
+                "policies": policies,
+                "policy_mapping_fn": (
+                    lambda agent_id: policy_ids[0]),
+            },
+        },
+    )
