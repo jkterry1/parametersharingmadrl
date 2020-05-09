@@ -54,7 +54,7 @@ policies = {"policy_0": gen_policy(0)}
 policy_ids = list(policies.keys())
 
 if __name__ == "__main__":
-    """
+    """ # psuedo-rainbow DQN
     tune.run(
         "DQN",
         stop={"episodes_total": 60000},
@@ -197,7 +197,7 @@ if __name__ == "__main__":
     )
     """
     
-    
+    """
     tune.run(
         "APEX",
         stop={"episodes_total": 60000},
@@ -236,6 +236,37 @@ if __name__ == "__main__":
     
             # Method specific
     
+            "multiagent": {
+                "policies": policies,
+                "policy_mapping_fn": (
+                    lambda agent_id: policy_ids[0]),
+            },
+        },
+    )
+    """
+    
+    #plain DQN
+    tune.run(
+        "DQN", 
+        stop={"episodes_total": 60000},
+        checkpoint_freq=10,
+        config={
+            # Enviroment specific
+            "env": "pursuit",
+            # General
+            "log_level": "ERROR",
+            "num_gpus": 1,
+            "num_workers": 8,
+            "num_envs_per_worker": 8,
+            "learning_starts": 1000,
+            "buffer_size": int(1e5),
+            "compress_observations": True,
+            "sample_batch_size": 20,
+            "train_batch_size": 512,
+            "gamma": .99,
+            # Method specific
+            "dueling": False,
+            "double_q": False,
             "multiagent": {
                 "policies": policies,
                 "policy_mapping_fn": (
