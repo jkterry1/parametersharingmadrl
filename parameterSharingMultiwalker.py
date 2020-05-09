@@ -53,8 +53,8 @@ policy_ids = list(policies.keys())
 
 # DQN and Apex-DQN do not work with continuous actions
 if __name__ == "__main__":
+    """
     tune.run(
-        """
         "PPO",
         stop={"episodes_total": 60000},
         checkpoint_freq=10,
