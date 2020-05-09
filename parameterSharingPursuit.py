@@ -54,7 +54,8 @@ policies = {"policy_0": gen_policy(0)}
 policy_ids = list(policies.keys())
 
 if __name__ == "__main__":
-    """ # psuedo-rainbow DQN
+    """
+    # psuedo-rainbow DQN
     tune.run(
         "DQN",
         stop={"episodes_total": 60000},
@@ -245,7 +246,7 @@ if __name__ == "__main__":
     )
     """
     
-    #plain DQN
+    # plain DQN
     tune.run(
         "DQN", 
         stop={"episodes_total": 60000},
