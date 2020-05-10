@@ -315,7 +315,6 @@ if __name__ == "__main__":
             "train_batch_size": 512,
             "gamma": .99,
             "critic_hiddens": [256, 256],
-            "pure_exploration_steps": 5000,
             # Method specific
             "multiagent": {
                 "policies": policies,
