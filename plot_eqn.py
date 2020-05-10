@@ -31,6 +31,3 @@ plt.title("Convergence Rates Over K Values")
 plt.xticks(ticks=[0,.000002,.000004,.000006,.000008,.00001],labels=['0','$2\\cdot10^{-6}$','$4\\cdot10^{-6}$','$6\\cdot10^{-6}$','$8\\cdot10^{-6}$','$10\\cdot10^{-6}$'])
 plt.yticks(ticks=[0,1e7,2e7,3e7,4e7,5e7],labels=['0','$1\\cdot10^{7}$','$2\\cdot10^{7}$','$3\\cdot10^{7}$','$4\\cdot10^{7}$','$5\\cdot10^{7}$'])
 plt.savefig("kplot_camera.png", bbox_inches='tight', pad_inches=.025)
-
-
-#.000002
