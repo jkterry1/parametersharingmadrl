@@ -4,6 +4,7 @@ import ray
 from ray.tune.registry import register_trainable, register_env
 import ray.rllib.agents.dqn as dqn  # DQNTrainer
 import ray.rllib.agents.ppo as ppo  # PPOTrainer
+import ray.rllib.agents.impala as impala  # IMPALATrainer
 import ray.rllib.agents.a3c.a2c as a2c  # A2CTrainer
 import ray.rllib.agents.sac as sac  # SACTrainer
 import ray.rllib.agents.ddpg.td3 as td3  # TD3Trainer
@@ -12,7 +13,7 @@ import os
 import pickle
 import numpy as np
 from ray.rllib.models import ModelCatalog
-from parameterSharingWalker import MLPModel
+from parameterSharingMultiwalker import MLPModel
 
 env_name = "multiwalker"
 # path should end with checkpoint-<> data file
