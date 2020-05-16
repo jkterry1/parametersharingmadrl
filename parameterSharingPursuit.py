@@ -8,6 +8,8 @@ from ray.rllib.models import Model, ModelCatalog
 from ray.tune.registry import register_env
 from ray.rllib.utils import try_import_tf
 from sisl_games.pursuit import pursuit
+# for APEX-DQN
+from ray.rllib.models.tf.tf_modelv2 import TFModelV2
 
 tf = try_import_tf()
 
@@ -22,10 +24,24 @@ class MLPModel(Model):
             last_layer, num_outputs, activation=None, name="fc_out")
         return output, last_layer
 
+class MLPModelV2(TFModelV2):
+    def __init__(self, obs_space, action_space, num_outputs, model_config,
+                 name="my_model"):
+        super().__init__(obs_space, action_space, num_outputs, model_config,
+                         name)
+        # Simplified to one layer.
+        input = tf.keras.layers.Input(obs_space.shape, dtype=obs_space.dtype)
+        output = tf.keras.layers.Dense(num_outputs, activation=None)
+        self.base_model = tf.keras.models.Sequential([input, output])
+        self.register_variables(self.base_model.variables)
+
+    def forward(self, input_dict, state, seq_lens):
+        return self.base_model(input_dict["obs"]), []
 
 # ray.init()
 
 ModelCatalog.register_custom_model("MLPModel", MLPModel)
+ModelCatalog.register_custom_model("MLPModelV2", MLPModelV2)
 
 # pursuit
 
@@ -49,8 +65,19 @@ def gen_policy(i):
     }
     return (None, obs_space, act_space, config)
 
+def gen_policyV2(i):
+    config = {
+        "model": {
+            "custom_model": "MLPModelV2",
+        },
+        "gamma": 0.99,
+    }
+    return (None, obs_space, act_space, config)
 
-policies = {"policy_0": gen_policy(0)}
+
+# policies = {"policy_0": gen_policy(0)}
+# For APEX-DQN ONLY
+policies = {"policy_0": gen_policyV2(0)}
 policy_ids = list(policies.keys())
 
 if __name__ == "__main__":
@@ -198,7 +225,7 @@ if __name__ == "__main__":
     )
     """
     
-    """
+    # APEX-DQN
     tune.run(
         "APEX",
         stop={"episodes_total": 60000},
@@ -220,21 +247,6 @@ if __name__ == "__main__":
             "train_batch_size": 512,
             "gamma": .99,
     
-            "double_q": False,
-            "dueling": False,
-            "num_atoms": 1,
-            "noisy": False,
-            "n_step": 3,
-            "lr": .0001,
-            "adam_epsilon": .00015,
-            "exploration_final_eps": 0.01,
-            "exploration_fraction": .1,
-            "prioritized_replay_alpha": 0.5,
-            "beta_annealing_fraction": 1.0,
-            "final_prioritized_replay_beta": 1.0,
-            "target_network_update_freq": 50000,
-            "timesteps_per_iteration": 25000,
-    
             # Method specific
     
             "multiagent": {
@@ -244,8 +256,8 @@ if __name__ == "__main__":
             },
         },
     )
-    """
     
+    """
     # plain DQN
     tune.run(
         "DQN", 
@@ -275,3 +287,4 @@ if __name__ == "__main__":
             },
         },
     )
+    """
