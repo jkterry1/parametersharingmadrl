@@ -1,14 +1,18 @@
 from sisl_games.waterworld.waterworld import env as custom_env
 import ray
 from ray.tune.registry import register_trainable, register_env
-import ray.rllib.agents.dqn as dqn
-import ray.rllib.agents.ddpg.td3 as td3
-import ray.rllib.agents.ddpg.apex as apex
+import ray.rllib.agents.dqn as dqn  # DQNTrainer
+import ray.rllib.agents.ppo as ppo  # PPOTrainer
+import ray.rllib.agents.impala as impala  # IMPALATrainer
+import ray.rllib.agents.a3c.a2c as a2c  # A2CTrainer
+import ray.rllib.agents.sac as sac  # SACTrainer
+import ray.rllib.agents.ddpg.td3 as td3  # TD3Trainer
+import ray.rllib.agents.ddpg.apex as apex  # ApexDDPGTrainer
 import os
 import pickle
 import numpy as np
 from ray.rllib.models import ModelCatalog
-# from parameterSharingWWorld import MLPModel
+from parameterSharingWaterworld import MLPModel
 
 env_name = "waterworld"
 # path should end with checkpoint-<> data file
@@ -31,7 +35,7 @@ with open(config_path, "rb") as f:
     config = pickle.load(f)
 
 
-# ModelCatalog.register_custom_model("MLPModel", MLPModel)
+ModelCatalog.register_custom_model("MLPModel", MLPModel)
 
 print(env.observation_space_dict)
 # exit()

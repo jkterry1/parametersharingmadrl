@@ -1,5 +1,4 @@
-#from sisl_games.waterworld import waterworld
-from sisl_games.multiwalker import multiwalker
+from sisl_games.multiwalker.multiwalker import env as custom_env
 import ray
 from ray.tune.registry import register_trainable, register_env
 import ray.rllib.agents.dqn as dqn  # DQNTrainer
@@ -23,7 +22,7 @@ checkpoint_path = "./ray_results/multiwalker/A2C/checkpoint_40/checkpoint-40"
 
 # register env -- For some reason, ray is unable to use already registered env in config
 def env_creator(args):
-    return multiwalker.env()
+    return custom_env()
 
 env = env_creator(1)
 register_env(env_name, env_creator)
