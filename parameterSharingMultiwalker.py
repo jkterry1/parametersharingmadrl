@@ -12,12 +12,6 @@ from sisl_games.multiwalker import multiwalker
 
 tf = try_import_tf()
 
-methods = ["A2C", "APEX_DDPG", "DDPG", "IMPALA", "PPO", "SAC", "TD3"]
-
-assert len(sys.argv) == 2, "Input the learning method as the second argument"
-method = sys.argv[1]
-assert method in methods, "Method should be one of {}".format(methods)
-
 class MLPModel(Model):
     def _build_layers_v2(self, input_dict, num_outputs, options):
         last_layer = tf.layers.dense(
@@ -28,36 +22,41 @@ class MLPModel(Model):
             last_layer, num_outputs, activation=None, name="fc_out")
         return output, last_layer
 
-
-# ray.init()
-
-ModelCatalog.register_custom_model("MLPModel", MLPModel)
-
-# multiwalker
-def env_creator(args):
-    return multiwalker.env()
-
-env = env_creator(1)
-register_env("multiwalker", env_creator)
-
-obs_space = env.observation_space_dict[0]  # gym.spaces.Box(low=0, high=1, shape=(148,), dtype=np.float32)
-act_space = env.action_space_dict[0]  # gym.spaces.Discrete(5)
-
-def gen_policy(i):
-    config = {
-        "model": {
-            "custom_model": "MLPModel",
-        },
-        "gamma": 0.99,
-    }
-    return (None, obs_space, act_space, config)
-
-
-policies = {"policy_0": gen_policy(0)}
-policy_ids = list(policies.keys())
-
 # DQN and Apex-DQN do not work with continuous actions
 if __name__ == "__main__":
+
+    methods = ["A2C", "APEX_DDPG", "DDPG", "IMPALA", "PPO", "SAC", "TD3"]
+    
+    assert len(sys.argv) == 2, "Input the learning method as the second argument"
+    method = sys.argv[1]
+    assert method in methods, "Method should be one of {}".format(methods)
+    
+    # ray.init()
+    
+    ModelCatalog.register_custom_model("MLPModel", MLPModel)
+    
+    # multiwalker
+    def env_creator(args):
+        return multiwalker.env()
+    
+    env = env_creator(1)
+    register_env("multiwalker", env_creator)
+    
+    obs_space = env.observation_space_dict[0]  # gym.spaces.Box(low=0, high=1, shape=(148,), dtype=np.float32)
+    act_space = env.action_space_dict[0]  # gym.spaces.Discrete(5)
+    
+    def gen_policy(i):
+        config = {
+            "model": {
+                "custom_model": "MLPModel",
+            },
+            "gamma": 0.99,
+        }
+        return (None, obs_space, act_space, config)
+    
+    policies = {"policy_0": gen_policy(0)}
+    policy_ids = list(policies.keys())
+
     if method == "A2C":
         tune.run(
             "A2C",
