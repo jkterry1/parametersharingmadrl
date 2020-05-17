@@ -10,9 +10,9 @@ This repo uses the Reinforcement Library toolkit `RLlib` from [Ray](https://gith
 
 
 ## Learning the games
-* Run `python3 parameterSharingPursuit.py` to train an RL method on `pursuit`.
-* Run `python3 parameterSharingMultiwalker.py` to train an RL method on `multiwalker`.
-* Run `python3 parameterSharingWaterworld.py` to train an RL method on `waterworld`.
+* Run `python3 parameterSharingPursuit.py RLmethod` to train an RL method `RLmethod` (e.g. PPO) on `pursuit`.
+* Run `python3 parameterSharingMultiwalker.py RLmethod` to train an RL method `RLmethod` (e.g. PPO) on `multiwalker`.
+* Run `python3 parameterSharingWaterworld.py RLmethod` to train an RL method `RLmethod` (e.g. PPO) on `waterworld`.
 
 ## Playing the learned games
 Use `play_pursuit.py`, `play_waterworld.py` and `play_multiwalker.py` to re-play the games using the learned RL policies. Simply change the `checkpoint_path` variable and make sure `params.pkl` is in the correct place, relative to the former.
