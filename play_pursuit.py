@@ -73,4 +73,5 @@ while not done:
     iteration += 1
 
 env.close()
+
 print("done", done, totalReward)
