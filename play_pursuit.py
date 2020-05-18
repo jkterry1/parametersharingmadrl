@@ -8,9 +8,16 @@ import os
 import pickle
 import numpy as np
 from ray.rllib.models import ModelCatalog
-from parameterSharingPursuit import MLPModel as Model
-# For ADQN only
-# from parameterSharingPursuit import MLPModelV2
+
+# 2 cases: APEX_DQN or everything else
+METHOD = "APEX_DQN"  # ""
+
+if METHOD == "APEX_DQN":
+    from parameterSharingPursuit import MLPModelV2
+    ModelCatalog.register_custom_model("MLPModelV2", MLPModelV2)
+else:
+    from parameterSharingPursuit import MLPModel
+    ModelCatalog.register_custom_model("MLPModel", MLPModel)
 
 env_name = "pursuit"
 # path should end with checkpoint-<> data file
@@ -34,11 +41,12 @@ with open(config_path, "rb") as f:
 
 ray.init()
 
-ModelCatalog.register_custom_model("MLPModel", MLPModel)
-# For ADQN only
-# ModelCatalog.register_custom_model("MLPModelV2", MLPModelV2)
+#if METHOD == "APEX_DQN":
+#    ModelCatalog.register_custom_model("MLPModelV2", MLPModelV2)
+#else:
+#    ModelCatalog.register_custom_model("MLPModel", MLPModel)
 
-RLAgent = DQNTrainer(env=env_name, config=config)
+RLAgent = ApexTrainer(env=env_name, config=config)
 RLAgent.restore(checkpoint_path)
 
 # init obs, action, reward
