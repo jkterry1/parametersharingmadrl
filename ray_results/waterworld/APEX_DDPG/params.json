@@ -1,9 +1,7 @@
 {
-  "beta_annealing_fraction": 1.0,
   "buffer_size": 100000,
   "compress_observations": true,
   "env": "waterworld",
-  "exploration_fraction": 0.1,
   "final_prioritized_replay_beta": 1.0,
   "gamma": 0.99,
   "learning_starts": 1000,
@@ -23,7 +21,7 @@
         }
       ]
     },
-    "policy_mapping_fn": "<function <lambda> at 0x7fe315c10560>"
+    "policy_mapping_fn": "<function <lambda> at 0x7f5fd16aacb0>"
   },
   "n_step": 3,
   "num_envs_per_worker": 8,
