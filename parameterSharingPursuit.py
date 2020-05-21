@@ -281,6 +281,8 @@ if __name__ == "__main__":
                 "gamma": .99,
         
                 # Method specific
+                "n_atoms": 51,
+                "noisy": True,
         
                 "multiagent": {
                     "policies": policies,
