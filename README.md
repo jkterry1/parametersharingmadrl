@@ -6,13 +6,13 @@ Here are a few multi-agent games that can be learned using RL.
 * To run `multiwalker`, use the command `python3 main_run.py multiwalker`.
 
 ## Requirements
-This repo uses the Reinforcement Library toolkit `RLlib` from [Ray](https://github.com/ray-project/ray). `Ray` version `0.9.0.dev0` needs to be installed. Install the other required packages using the command `pip install -r requirements.txt`
+This repo uses the Reinforcement Library toolkit `RLlib` from [Ray](https://github.com/ray-project/ray). This specific wheel of the `Ray` package needs to be installed: \url{link to Ray wheel}. Once the wheel is downloaded, install it as `pip install -U path/to/wheel.whl`. Install the other required packages using the command `pip install -r requirements.txt`. Required Python version is `3.7.6`.
 
 
 ## Learning the games
-* Run `python3 parameterSharingPursuit.py` to train an RL method on `pursuit`.
-* Run `python3 parameterSharingMultiwalker.py` to train an RL method on `multiwalker`.
-* Run `python3 parameterSharingWaterworld.py` to train an RL method on `waterworld`.
+* Run `python3 parameterSharingPursuit.py RLmethod` to train an RL method `RLmethod` (e.g. PPO) on `pursuit`.
+* Run `python3 parameterSharingMultiwalker.py RLmethod` to train an RL method `RLmethod` (e.g. PPO) on `multiwalker`.
+* Run `python3 parameterSharingWaterworld.py RLmethod` to train an RL method `RLmethod` (e.g. PPO) on `waterworld`.
 
 ## Playing the learned games
 Use `play_pursuit.py`, `play_waterworld.py` and `play_multiwalker.py` to re-play the games using the learned RL policies. Simply change the `checkpoint_path` variable and make sure `params.pkl` is in the correct place, relative to the former.

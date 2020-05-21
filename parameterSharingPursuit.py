@@ -14,24 +14,6 @@ from ray.rllib.models.tf.tf_modelv2 import TFModelV2
 
 tf = try_import_tf()
 
-# RDQN - Rainbow DQN
-# ADQN - Apex DQN
-methods = ["A2C", "ADQN", "DQN", "IMPALA", "PPO", "RDQN"]
-
-assert len(sys.argv) == 2, "Input the learning method as the second argument"
-method = sys.argv[1]
-assert method in methods, "Method should be one of {}".format(methods)
-
-# pursuit
-def env_creator(args):
-    return pursuit.env()
-
-env = env_creator(1)
-register_env("pursuit", env_creator)
-
-obs_space = gym.spaces.Box(low=0, high=1, shape=(148,), dtype=np.float32)
-act_space = gym.spaces.Discrete(5)
-
 class MLPModel(Model):
     def _build_layers_v2(self, input_dict, num_outputs, options):
         last_layer = tf.layers.dense(
@@ -56,36 +38,54 @@ class MLPModelV2(TFModelV2):
     def forward(self, input_dict, state, seq_lens):
         return self.base_model(input_dict["obs"]), []
 
-# ray.init()
-
-if method == "ADQN":
-    ModelCatalog.register_custom_model("MLPModelV2", MLPModelV2)
-    def gen_policyV2(i):
-        config = {
-            "model": {
-                "custom_model": "MLPModelV2",
-            },
-            "gamma": 0.99,
-        }
-        return (None, obs_space, act_space, config)
-    policies = {"policy_0": gen_policyV2(0)}
-    
-else:
-    ModelCatalog.register_custom_model("MLPModel", MLPModel)
-    def gen_policy(i):
-        config = {
-            "model": {
-                "custom_model": "MLPModel",
-            },
-            "gamma": 0.99,
-        }
-        return (None, obs_space, act_space, config)
-    policies = {"policy_0": gen_policy(0)}
-
-# for all methods
-policy_ids = list(policies.keys())
-
 if __name__ == "__main__":
+    # RDQN - Rainbow DQN
+    # ADQN - Apex DQN
+    methods = ["A2C", "ADQN", "DQN", "IMPALA", "PPO", "RDQN"]
+    
+    assert len(sys.argv) == 2, "Input the learning method as the second argument"
+    method = sys.argv[1]
+    assert method in methods, "Method should be one of {}".format(methods)
+    
+    # pursuit
+    def env_creator(args):
+        return pursuit.env()
+    
+    env = env_creator(1)
+    register_env("pursuit", env_creator)
+    
+    obs_space = gym.spaces.Box(low=0, high=1, shape=(148,), dtype=np.float32)
+    act_space = gym.spaces.Discrete(5)
+    
+    # ray.init()
+    
+    if method == "ADQN":
+        ModelCatalog.register_custom_model("MLPModelV2", MLPModelV2)
+        def gen_policyV2(i):
+            config = {
+                "model": {
+                    "custom_model": "MLPModelV2",
+                },
+                "gamma": 0.99,
+            }
+            return (None, obs_space, act_space, config)
+        policies = {"policy_0": gen_policyV2(0)}
+        
+    else:
+        ModelCatalog.register_custom_model("MLPModel", MLPModel)
+        def gen_policy(i):
+            config = {
+                "model": {
+                    "custom_model": "MLPModel",
+                },
+                "gamma": 0.99,
+            }
+            return (None, obs_space, act_space, config)
+        policies = {"policy_0": gen_policy(0)}
+    
+    # for all methods
+    policy_ids = list(policies.keys())
+
     if method == "A2C":
         tune.run(
             "A2C",
@@ -281,6 +281,8 @@ if __name__ == "__main__":
                 "gamma": .99,
         
                 # Method specific
+                "n_atoms": 51,
+                "noisy": True,
         
                 "multiagent": {
                     "policies": policies,

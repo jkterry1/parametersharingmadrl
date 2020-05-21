@@ -1,18 +1,28 @@
-# from pistonBall import env as custom_env
 from sisl_games.pursuit.pursuit import env as custom_env
 import ray
 from ray.tune.registry import register_trainable, register_env
-import ray.rllib.agents.dqn as dqn
-import ray.rllib.agents.ppo as ppo
+from ray.rllib.agents.dqn import DQNTrainer
+from ray.rllib.agents.dqn import ApexTrainer
+from ray.rllib.agents.ppo import PPOTrainer
 import os
 import pickle
 import numpy as np
 from ray.rllib.models import ModelCatalog
-from parameterSharingPursuit import MLPModel
+
+# 2 cases: APEX_DQN or everything else
+METHOD = "APEX_DQN"  # ""
+
+if METHOD == "APEX_DQN":
+    from parameterSharingPursuit import MLPModelV2
+    ModelCatalog.register_custom_model("MLPModelV2", MLPModelV2)
+else:
+    from parameterSharingPursuit import MLPModel
+    ModelCatalog.register_custom_model("MLPModel", MLPModel)
 
 env_name = "pursuit"
 # path should end with checkpoint-<> data file
-checkpoint_path = "./ray_results/pursuit/checkpoint_1870/checkpoint-1870"
+# checkpoint_path = "./ray_results/pursuit/checkpoint_1870/checkpoint-1870"
+checkpoint_path = "/home/ananth/ray_results/APEX/APEX_pursuit_1212ab4a_2020-05-14_23-42-1670ra3e0k/checkpoint_1000/checkpoint-1000"
 
 # TODO: see ray/rllib/rollout.py -- `run` method for checkpoint restoring
 
@@ -31,9 +41,12 @@ with open(config_path, "rb") as f:
 
 ray.init()
 
-ModelCatalog.register_custom_model("model1", MLPModel)
+#if METHOD == "APEX_DQN":
+#    ModelCatalog.register_custom_model("MLPModelV2", MLPModelV2)
+#else:
+#    ModelCatalog.register_custom_model("MLPModel", MLPModel)
 
-RLAgent = ppo.PPOTrainer(env=env_name, config=config)
+RLAgent = ApexTrainer(env=env_name, config=config)
 RLAgent.restore(checkpoint_path)
 
 # init obs, action, reward
@@ -68,5 +81,4 @@ while not done:
     iteration += 1
 
 env.close()
-
 print("done", done, totalReward)
