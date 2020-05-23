@@ -59,7 +59,7 @@ if __name__ == "__main__":
     
     # ray.init()
     
-    if method == "ADQN":
+    if method in ["ADQN", "RDQN"]:
         ModelCatalog.register_custom_model("MLPModelV2", MLPModelV2)
         def gen_policyV2(i):
             config = {
@@ -281,8 +281,21 @@ if __name__ == "__main__":
                 "gamma": .99,
         
                 # Method specific
-                "n_atoms": 51,
-                "noisy": True,
+                "num_atoms": 51,
+                "dueling": True,
+                "double_q": True,
+                "n_step": 2,
+                "batch_mode": "complete_episodes",
+                "prioritized_replay": True,
+
+                # # alternative 1
+                # "noisy": True,
+                # alternative 2
+                "parameter_noise": True,
+
+                # based on expected return
+                "v_min": 0,
+                "v_max": 1500,
         
                 "multiagent": {
                     "policies": policies,

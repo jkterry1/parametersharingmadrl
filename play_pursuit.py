@@ -9,10 +9,11 @@ import pickle
 import numpy as np
 from ray.rllib.models import ModelCatalog
 
-# 2 cases: APEX_DQN or everything else
-METHOD = "APEX_DQN"  # ""
+# 2 cases: APEX_DQN, RAINBOW_DQN or everything else
+MLPv2methods = ["APEX_DQN", "RAINBOW_DQN"]
+METHOD = "RAINBOW_DQN"  # APEX_DQN # ""
 
-if METHOD == "APEX_DQN":
+if METHOD in MLPv2methods:
     from parameterSharingPursuit import MLPModelV2
     ModelCatalog.register_custom_model("MLPModelV2", MLPModelV2)
 else:
@@ -21,8 +22,10 @@ else:
 
 env_name = "pursuit"
 # path should end with checkpoint-<> data file
-# checkpoint_path = "./ray_results/pursuit/checkpoint_1870/checkpoint-1870"
-checkpoint_path = "/home/ananth/ray_results/APEX/APEX_pursuit_1212ab4a_2020-05-14_23-42-1670ra3e0k/checkpoint_1000/checkpoint-1000"
+# checkpoint_path = "./ray_results/pursuit/APEX_DQN/checkpoint_1000/checkpoint-1000"
+# Trainer = ApexTrainer
+checkpoint_path = "./ray_results/pursuit/RAINBOW_DQN/checkpoint_6630/checkpoint-6630"
+Trainer = DQNTrainer
 
 # TODO: see ray/rllib/rollout.py -- `run` method for checkpoint restoring
 
@@ -41,12 +44,7 @@ with open(config_path, "rb") as f:
 
 ray.init()
 
-#if METHOD == "APEX_DQN":
-#    ModelCatalog.register_custom_model("MLPModelV2", MLPModelV2)
-#else:
-#    ModelCatalog.register_custom_model("MLPModel", MLPModel)
-
-RLAgent = ApexTrainer(env=env_name, config=config)
+RLAgent = Trainer(env=env_name, config=config)
 RLAgent.restore(checkpoint_path)
 
 # init obs, action, reward
