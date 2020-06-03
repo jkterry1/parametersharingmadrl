@@ -43,7 +43,7 @@ plt.plot(data[:, 0], data[:, 1], '--', label='A2C', linewidth=0.6, color='tab:pu
 df = pd.read_csv(os.path.join(data_path,'sa_apex_ddpg.csv'))
 df = df[['episodes_total', "episode_reward_mean"]]
 data = df.to_numpy()
-plt.plot(data[:, 0], data[:, 1]/9, label='ApeX DDPG', linewidth=0.6, color='tab:brown', linestyle=(0, (5, 2, 1, 2)))
+plt.plot(data[:, 0], data[:, 1], label='ApeX DDPG', linewidth=0.6, color='tab:brown', linestyle=(0, (5, 2, 1, 2)))
 
 df = pd.read_csv(os.path.join(data_path, 'sa_sac.csv'))
 df = df[['episodes_total', "episode_reward_mean"]]

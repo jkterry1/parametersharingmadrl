@@ -38,10 +38,10 @@ df = df[['episodes_total', "episode_reward_mean"]]
 data = df.to_numpy()
 plt.plot(data[:, 0], data[:, 1], '--', label='DDPG', linewidth=0.6, color='steelblue', linestyle=(0, (5, 2, 1, 2)))
 
-df = pd.read_csv(os.path.join(data_path,'apex_ddpg_2.csv'))
+df = pd.read_csv(os.path.join(data_path,'apex_ddpg.csv'))
 df = df[['episodes_total', "episode_reward_mean"]]
 data = df.to_numpy()
-filtered = scipy.signal.savgol_filter(data[:, 1], int(len(data[:, 1])/30)+2, 5)
+filtered = scipy.signal.savgol_filter(data[:, 1], int(len(data[:, 1])/30)+1, 5)
 plt.plot(data[:, 0], filtered, '--', label='ApeX DDPG', linewidth=0.6, color='tab:brown', linestyle=(0, (5, 2, 1, 2)))
 
 df = pd.read_csv(os.path.join(data_path,'impala.csv'))
@@ -68,8 +68,8 @@ plt.ylabel('Average Total Reward', labelpad=1)
 plt.title('Waterworld')
 plt.xticks(ticks=[10000,20000,30000,40000,50000],labels=['10k','20k','30k','40k','50k'])
 plt.xlim(0, 60000)
-plt.yticks(ticks=[0,20,40],labels=['0','20','40'])
-plt.ylim(-20, 60)
+plt.yticks(ticks=[0,20,40,60],labels=['0','20','40','60'])
+plt.ylim(-20, 80)
 plt.tight_layout()
 # plt.legend(loc='upper right', ncol=2, labelspacing=.2, columnspacing=.25, borderpad=.25)
 plt.margins(x=0)
