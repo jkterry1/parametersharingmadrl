@@ -41,8 +41,8 @@ plt.plot(data[:, 0], data[:, 1], '--', label='DDPG', linewidth=0.6, color='steel
 df = pd.read_csv(os.path.join(data_path,'apex_ddpg.csv'))
 df = df[['episodes_total', "episode_reward_mean"]]
 data = df.to_numpy()
-filtered = scipy.signal.savgol_filter(data[:, 1], int(len(data[:, 1])/30)+1, 5)
-plt.plot(data[:, 0], filtered, '--', label='ApeX DDPG', linewidth=0.6, color='tab:brown', linestyle=(0, (5, 2, 1, 2)))
+# filtered = scipy.signal.savgol_filter(data[:, 1], int(len(data[:, 1])/30)+1, 5)
+plt.plot(data[:, 0], data[:, 1], '--', label='ApeX DDPG', linewidth=0.6, color='tab:brown', linestyle=(0, (5, 2, 1, 2)))
 
 df = pd.read_csv(os.path.join(data_path,'impala.csv'))
 df = df[['episodes_total', "episode_reward_mean"]]

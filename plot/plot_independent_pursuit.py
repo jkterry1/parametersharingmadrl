@@ -28,8 +28,8 @@ plt.plot(data[:, 0], filtered, label='A2C', linewidth=0.6, color='tab:purple', l
 df = pd.read_csv(os.path.join(data_path, 'sa_apex_second_best.csv'))
 df = df[['episodes_total', "episode_reward_mean"]]
 data = df.to_numpy()
-filtered = scipy.signal.savgol_filter(data[:, 1], int(len(data[:, 1])/110)+1, 5)
-plt.plot(data[:, 0], filtered, '--', label='ApeX DQN', linewidth=0.6, color='tab:brown', linestyle=(0, (1, 1)))
+# filtered = scipy.signal.savgol_filter(data[:, 1], int(len(data[:, 1])/110)+1, 5)
+plt.plot(data[:, 0], data[:,1], '--', label='ApeX DQN', linewidth=0.6, color='tab:brown', linestyle=(0, (1, 1)))
 
 df = pd.read_csv(os.path.join(data_path, 'sa_rainbow_dqn.csv'))
 df = df[['episodes_total', "episode_reward_mean"]]
