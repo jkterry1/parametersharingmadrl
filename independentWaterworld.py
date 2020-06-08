@@ -12,7 +12,7 @@ from sisl_games.waterworld import waterworld
 
 tf = try_import_tf()
 
-methods = ["A2C", "APEX_DDPG", "DDPG", "IMPALA", "PPO", "SAC", "TD3"]
+methods = ["A2C", "APEX_DDPG", "DDPG", "DDPG_SHARED", "IMPALA", "PPO", "SAC", "TD3"]
 
 assert len(sys.argv) == 2, "Input the learning method as the second argument"
 method = sys.argv[1]
@@ -27,6 +27,28 @@ class MLPModel(Model):
         output = tf.layers.dense(
             last_layer, num_outputs, activation=None, name="fc_out")
         return output, last_layer
+
+from ray.rllib.agents.ddpg.ddpg_policy import DDPGTFPolicy
+class DDPGSharedPolicy(DDPGTFPolicy):
+    def _build_q_network(self, obs, obs_space, action_space, actions):
+        with tf.variable_scope("shared_scope",reuse=tf.AUTO_REUSE) as scope:
+            if self.config["use_state_preprocessor"]:
+                q_model = ModelCatalog.get_model({
+                    "obs": obs,
+                    "is_training": self._get_is_training_placeholder(),
+                }, obs_space, action_space, 1, self.config["model"])
+                q_out = tf.concat([q_model.last_layer, actions], axis=1)
+            else:
+                q_model = None
+                q_out = tf.concat([obs, actions], axis=1)
+
+            activation = getattr(tf.nn, self.config["critic_hidden_activation"])
+            for hidden in self.config["critic_hiddens"]:
+                q_out = tf.layers.dense(q_out, units=hidden, activation=activation)
+            q_values = tf.layers.dense(q_out, units=1, activation=None)
+
+        return q_values, q_model
+
 
 
 ModelCatalog.register_custom_model("MLPModel", MLPModel)
@@ -61,10 +83,10 @@ if __name__ == "__main__":
             stop={"episodes_total": 60000},
             checkpoint_freq=10,
             config={
-        
+
                 # Enviroment specific
                 "env": "waterworld",
-        
+
                 # General
                 "log_level": "ERROR",
                 "num_gpus": 1,
@@ -74,11 +96,11 @@ if __name__ == "__main__":
                 "sample_batch_size": 20,
                 "train_batch_size": 512,
                 "gamma": .99,
-        
+
                 "lr_schedule": [[0, 0.0007],[20000000, 0.000000000001]],
-        
+
                 # Method specific
-        
+
                 "multiagent": {
                     "policies": policies,
                     "policy_mapping_fn": (
@@ -93,10 +115,10 @@ if __name__ == "__main__":
             stop={"episodes_total": 60000},
             checkpoint_freq=10,
             config={
-        
+
                 # Enviroment specific
                 "env": "waterworld",
-        
+
                 # General
                 "log_level": "ERROR",
                 "num_gpus": 1,
@@ -108,16 +130,16 @@ if __name__ == "__main__":
                 "sample_batch_size": 20,
                 "train_batch_size": 512,
                 "gamma": .99,
-        
+
                 "n_step": 3,
                 "lr": .0001,
                 "prioritized_replay_alpha": 0.5,
                 "final_prioritized_replay_beta": 1.0,
                 "target_network_update_freq": 50000,
                 "timesteps_per_iteration": 25000,
-        
+
                 # Method specific
-        
+
                 "multiagent": {
                     "policies": policies,
                     "policy_mapping_fn": (
@@ -155,6 +177,44 @@ if __name__ == "__main__":
                 },
             },
         )
+    elif method == "DDPG_SHARED":
+        def gen_policy(i):
+            config = {
+                "model": {
+                    "custom_model": "MLPModel",
+                },
+                "gamma": 0.99,
+                "_my_id": i,
+            }
+            return DDPGSharedPolicy,obs_space, act_space, config
+        policies = {"policy_{}".format(i): gen_policy(i) for i in range(num_agents)}
+        policy_ids = list(policies.keys())
+        tune.run(
+            "DDPG",
+            stop={"episodes_total": 60000},
+            checkpoint_freq=10,
+            config={
+                # Enviroment specific
+                "env": "waterworld",
+                # General
+                "log_level": "ERROR",
+                "num_gpus": 1,
+                "num_workers": 5,
+                "num_envs_per_worker": 8,
+                "learning_starts": 5000,
+                "buffer_size": int(1e5),
+                "compress_observations": True,
+                "sample_batch_size": 20,
+                "train_batch_size": 512,
+                "gamma": .99,
+                "critic_hiddens": [256, 256],
+                "multiagent": {
+                    "policies": policies,
+                    "policy_mapping_fn": (
+                        lambda agent_id: "policy_{}".format(agent_id)),
+                },
+            },
+        )
 
     elif method == "IMPALA":
         tune.run(
@@ -162,10 +222,10 @@ if __name__ == "__main__":
             stop={"episodes_total": 60000},
             checkpoint_freq=10,
             config={
-        
+
                 # Enviroment specific
                 "env": "waterworld",
-        
+
                 # General
                 "log_level": "ERROR",
                 "num_gpus": 1,
@@ -175,12 +235,12 @@ if __name__ == "__main__":
                 "sample_batch_size": 20,
                 "train_batch_size": 512,
                 "gamma": .99,
-        
+
                 "clip_rewards": True,
                 "lr_schedule": [[0, 0.0005],[20000000, 0.000000000001]],
-        
+
                 # Method specific
-        
+
                 "multiagent": {
                     "policies": policies,
                     "policy_mapping_fn": (
@@ -195,10 +255,10 @@ if __name__ == "__main__":
             stop={"episodes_total": 60000},
             checkpoint_freq=10,
             config={
-        
+
                 # Enviroment specific
                 "env": "waterworld",
-        
+
                 # General
                 "log_level": "ERROR",
                 "num_gpus": 1,
@@ -206,8 +266,8 @@ if __name__ == "__main__":
                 "num_envs_per_worker": 8,
                 "compress_observations": False,
                 "gamma": .99,
-        
-        
+
+
                 "lambda": 0.95,
                 "kl_coeff": 0.5,
                 "clip_rewards": True,
@@ -220,9 +280,9 @@ if __name__ == "__main__":
                 "num_sgd_iter": 10,
                 "batch_mode": 'truncate_episodes',
                 "vf_share_layers": True,
-        
+
                 # Method specific
-        
+
                 "multiagent": {
                     "policies": policies,
                     "policy_mapping_fn": (
@@ -237,10 +297,10 @@ if __name__ == "__main__":
             stop={"episodes_total": 60000},
             checkpoint_freq=10,
             config={
-        
+
                 # Enviroment specific
                 "env": "waterworld",
-        
+
                 # General
                 "log_level": "ERROR",
                 "num_gpus": 1,
@@ -252,7 +312,7 @@ if __name__ == "__main__":
                 "sample_batch_size": 20,
                 "train_batch_size": 512,
                 "gamma": .99,
-        
+
                 "horizon": 200,
                 "soft_horizon": False,
                 "Q_model": {
@@ -277,7 +337,7 @@ if __name__ == "__main__":
                 "normalize_actions": False,
                 "evaluation_interval": 1,
                 "metrics_smoothing_episodes": 5,
-        
+
                 "multiagent": {
                     "policies": policies,
                     "policy_mapping_fn": (
@@ -292,10 +352,10 @@ if __name__ == "__main__":
             stop={"episodes_total": 60000},
             checkpoint_freq=10,
             config={
-        
+
                 # Enviroment specific
                 "env": "waterworld",
-        
+
                 # General
                 "log_level": "ERROR",
                 "num_gpus": 1,
@@ -307,12 +367,12 @@ if __name__ == "__main__":
                 "sample_batch_size": 20,
                 "train_batch_size": 512,
                 "gamma": .99,
-        
+
                 "critic_hiddens": [256, 256],
                 "pure_exploration_steps": 5000,
-        
+
                 # Method specific
-        
+
                 "multiagent": {
                     "policies": policies,
                     "policy_mapping_fn": (
@@ -320,5 +380,3 @@ if __name__ == "__main__":
                 },
             },
         )
-
-

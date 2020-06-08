@@ -15,7 +15,7 @@ tf = try_import_tf()
 
 # RDQN - Rainbow DQN
 # ADQN - Apex DQN
-methods = ["A2C", "ADQN", "DQN", "IMPALA", "PPO", "RDQN"]
+methods = ["A2C", "ADQN", "DDPG_SHARED", "DQN", "IMPALA", "PPO", "RDQN"]
 
 assert len(sys.argv) == 2, "Input the learning method as the second argument"
 method = sys.argv[1]
@@ -68,7 +68,7 @@ if method == "ADQN":
         }
         return (None, obs_space, act_space, config)
     policies = {"policy_{}".format(i): gen_policyV2(i) for i in range(num_agents)}
-    
+
 else:
     ModelCatalog.register_custom_model("MLPModel", MLPModel)
     def gen_policy(i):
@@ -80,7 +80,7 @@ else:
         }
         return (None, obs_space, act_space, config)
     policies = {"policy_{}".format(i): gen_policy(i) for i in range(num_agents)}
-    
+
 
 # for all methods
 policy_ids = list(policies.keys())
@@ -92,10 +92,10 @@ if __name__ == "__main__":
             stop={"episodes_total": 60000},
             checkpoint_freq=10,
             config={
-        
+
                 # Enviroment specific
                 "env": "pursuit",
-        
+
                 # General
                 "log_level": "ERROR",
                 "num_gpus": 1,
@@ -105,11 +105,11 @@ if __name__ == "__main__":
                 "sample_batch_size": 20,
                 "train_batch_size": 512,
                 "gamma": .99,
-        
+
                 "lr_schedule": [[0, 0.0007],[20000000, 0.000000000001]],
-        
+
                 # Method specific
-        
+
                 "multiagent": {
                     "policies": policies,
                     "policy_mapping_fn": (
@@ -125,10 +125,10 @@ if __name__ == "__main__":
             stop={"episodes_total": 60000},
             checkpoint_freq=10,
             config={
-        
+
                 # Enviroment specific
                 "env": "pursuit",
-        
+
                 # General
                 "log_level": "INFO",
                 "num_gpus": 1,
@@ -140,9 +140,9 @@ if __name__ == "__main__":
                 "sample_batch_size": 20,
                 "train_batch_size": 512,
                 "gamma": .99,
-        
+
                 # Method specific
-        
+
                 "multiagent": {
                     "policies": policies,
                     "policy_mapping_fn": (
@@ -154,7 +154,7 @@ if __name__ == "__main__":
     elif method == "DQN":
         # plain DQN
         tune.run(
-            "DQN", 
+            "DQN",
             stop={"episodes_total": 60000},
             checkpoint_freq=10,
             config={
@@ -188,10 +188,10 @@ if __name__ == "__main__":
             stop={"episodes_total": 60000},
             checkpoint_freq=10,
             config={
-        
+
                 # Enviroment specific
                 "env": "pursuit",
-        
+
                 # General
                 "log_level": "ERROR",
                 "num_gpus": 1,
@@ -201,12 +201,12 @@ if __name__ == "__main__":
                 "sample_batch_size": 20,
                 "train_batch_size": 512,
                 "gamma": .99,
-        
+
                 "clip_rewards": True,
                 "lr_schedule": [[0, 0.0005],[20000000, 0.000000000001]],
-        
+
                 # Method specific
-        
+
                 "multiagent": {
                     "policies": policies,
                     "policy_mapping_fn": (
@@ -221,10 +221,10 @@ if __name__ == "__main__":
             stop={"episodes_total": 60000},
             checkpoint_freq=10,
             config={
-        
+
                 # Enviroment specific
                 "env": "pursuit",
-        
+
                 # General
                 "log_level": "ERROR",
                 "num_gpus": 1,
@@ -232,8 +232,8 @@ if __name__ == "__main__":
                 "num_envs_per_worker": 8,
                 "compress_observations": False,
                 "gamma": .99,
-        
-        
+
+
                 "lambda": 0.95,
                 "kl_coeff": 0.5,
                 "clip_rewards": True,
@@ -246,9 +246,9 @@ if __name__ == "__main__":
                 "num_sgd_iter": 10,
                 "batch_mode": 'truncate_episodes',
                 "vf_share_layers": True,
-        
+
                 # Method specific
-        
+
                 "multiagent": {
                     "policies": policies,
                     "policy_mapping_fn": (
@@ -264,10 +264,10 @@ if __name__ == "__main__":
             stop={"episodes_total": 60000},
             checkpoint_freq=10,
             config={
-        
+
                 # Enviroment specific
                 "env": "pursuit",
-        
+
                 # General
                 "log_level": "ERROR",
                 "num_gpus": 1,
@@ -279,9 +279,9 @@ if __name__ == "__main__":
                 "sample_batch_size": 20,
                 "train_batch_size": 512,
                 "gamma": .99,
-        
+
                 # Method specific
-        
+
                 "multiagent": {
                     "policies": policies,
                     "policy_mapping_fn": (
@@ -289,5 +289,3 @@ if __name__ == "__main__":
                 },
             },
         )
-
-
