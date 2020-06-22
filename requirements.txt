@@ -63,7 +63,7 @@ python-dateutil==2.7.3
 python-utils==2.3.0
 pytz==2019.3
 PyWavelets==1.0.3
-PyYAML==3.13
+PyYAML==5.1
 ray==0.9.0.dev0
 redis==3.3.11
 requests==2.22.0
