@@ -98,10 +98,10 @@
         }
       ]
     },
-    "policy_mapping_fn": "<function <lambda> at 0x7f75868ef440>"
+    "policy_mapping_fn": "<function <lambda> at 0x7fe7dec24e60>"
   },
   "num_envs_per_worker": 8,
-  "num_gpus": 2,
+  "num_gpus": 1,
   "num_workers": 8,
   "sample_batch_size": 20,
   "train_batch_size": 512
