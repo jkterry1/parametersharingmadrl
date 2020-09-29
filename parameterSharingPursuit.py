@@ -38,37 +38,27 @@ class MLPModelV2(TFModelV2):
     def forward(self, input_dict, state, seq_lens):
         return self.base_model(input_dict["obs"]), []
 
-class MaddpgPursuitWrapper(pursuit.env):
-    def step(self, action_dict):
-        item1 = list(action_dict.values())[0]
-        if np.prod(item1.shape) != 1:
-            action_dict = {
-                k: np.random.choice([0, 1, 2, 3, 4], p=v)
-                for k, v in action_dict.items()
-            }
-        return super().step(action_dict)
-
 if __name__ == "__main__":
     # RDQN - Rainbow DQN
     # ADQN - Apex DQN
-    methods = ["A2C", "ADQN", "DQN", "IMPALA", "PPO", "RDQN", "MADDPG"]
-
+    methods = ["A2C", "ADQN", "DQN", "IMPALA", "PPO", "RDQN"]
+    
     assert len(sys.argv) == 2, "Input the learning method as the second argument"
     method = sys.argv[1]
     assert method in methods, "Method should be one of {}".format(methods)
-
+    
     # pursuit
     def env_creator(args):
-        return MaddpgPursuitWrapper()
-
+        return pursuit.env()
+    
     env = env_creator(1)
     register_env("pursuit", env_creator)
-
+    
     obs_space = gym.spaces.Box(low=0, high=1, shape=(148,), dtype=np.float32)
     act_space = gym.spaces.Discrete(5)
-
+    
     # ray.init()
-
+    
     if method in ["ADQN", "RDQN"]:
         ModelCatalog.register_custom_model("MLPModelV2", MLPModelV2)
         def gen_policyV2(i):
@@ -80,7 +70,7 @@ if __name__ == "__main__":
             }
             return (None, obs_space, act_space, config)
         policies = {"policy_0": gen_policyV2(0)}
-
+        
     else:
         ModelCatalog.register_custom_model("MLPModel", MLPModel)
         def gen_policy(i):
@@ -92,7 +82,7 @@ if __name__ == "__main__":
             }
             return (None, obs_space, act_space, config)
         policies = {"policy_0": gen_policy(0)}
-
+    
     # for all methods
     policy_ids = list(policies.keys())
 
@@ -102,10 +92,10 @@ if __name__ == "__main__":
             stop={"episodes_total": 60000},
             checkpoint_freq=10,
             config={
-
+        
                 # Enviroment specific
                 "env": "pursuit",
-
+        
                 # General
                 "log_level": "ERROR",
                 "num_gpus": 1,
@@ -115,11 +105,11 @@ if __name__ == "__main__":
                 "sample_batch_size": 20,
                 "train_batch_size": 512,
                 "gamma": .99,
-
+        
                 "lr_schedule": [[0, 0.0007],[20000000, 0.000000000001]],
-
+        
                 # Method specific
-
+        
                 "multiagent": {
                     "policies": policies,
                     "policy_mapping_fn": (
@@ -128,47 +118,6 @@ if __name__ == "__main__":
             },
         )
 
-    elif method == "MADDPG":
-        # obs_space_dict = {
-        #     "agent_1": Discrete(6),
-        #     "agent_2": Discrete(6),
-        # }
-        # act_space_dict = {
-        #     "agent_1": TwoStepGame.action_space,
-        #     "agent_2": TwoStepGame.action_space,
-        # }
-        group = False
-        tune.run(
-            "contrib/MADDPG",
-            stop={"episodes_total": 60000},
-            checkpoint_freq=100,
-            config={
-                "env": "pursuit",
-                "log_level": "INFO",
-                "num_gpus": 1,
-                "num_workers": 8,
-                "num_envs_per_worker": 8,
-                "learning_starts": 1000,
-                "buffer_size": int(1e6),
-                "compress_observations": True,
-                "sample_batch_size": 20,
-                "train_batch_size": 512,
-                "gamma": .95,
-                "lr": 1e-2,
-                #"learning_starts": 100,
-                "env_config": {
-                    "actions_are_logits": True,
-                },
-                "multiagent": {
-                    "policies": {
-                        f"pol{i+1}": (None, obs_space, act_space, {
-                            "agent_id": i,
-                        }) for i in range(env.num_agents)
-                    },
-                    "policy_mapping_fn": lambda x: f"pol{x+1}",
-                },
-            }
-        )
     elif method == "ADQN":
         # APEX-DQN
         tune.run(
@@ -176,10 +125,10 @@ if __name__ == "__main__":
             stop={"episodes_total": 60000},
             checkpoint_freq=10,
             config={
-
+        
                 # Enviroment specific
                 "env": "pursuit",
-
+        
                 # General
                 "log_level": "INFO",
                 "num_gpus": 1,
@@ -191,9 +140,9 @@ if __name__ == "__main__":
                 "sample_batch_size": 20,
                 "train_batch_size": 512,
                 "gamma": .99,
-
+        
                 # Method specific
-
+        
                 "multiagent": {
                     "policies": policies,
                     "policy_mapping_fn": (
@@ -205,7 +154,7 @@ if __name__ == "__main__":
     elif method == "DQN":
         # plain DQN
         tune.run(
-            "DQN",
+            "DQN", 
             stop={"episodes_total": 60000},
             checkpoint_freq=10,
             config={
@@ -239,10 +188,10 @@ if __name__ == "__main__":
             stop={"episodes_total": 60000},
             checkpoint_freq=10,
             config={
-
+        
                 # Enviroment specific
                 "env": "pursuit",
-
+        
                 # General
                 "log_level": "ERROR",
                 "num_gpus": 1,
@@ -252,12 +201,12 @@ if __name__ == "__main__":
                 "sample_batch_size": 20,
                 "train_batch_size": 512,
                 "gamma": .99,
-
+        
                 "clip_rewards": True,
                 "lr_schedule": [[0, 0.0005],[20000000, 0.000000000001]],
-
+        
                 # Method specific
-
+        
                 "multiagent": {
                     "policies": policies,
                     "policy_mapping_fn": (
@@ -272,10 +221,10 @@ if __name__ == "__main__":
             stop={"episodes_total": 60000},
             checkpoint_freq=10,
             config={
-
+        
                 # Enviroment specific
                 "env": "pursuit",
-
+        
                 # General
                 "log_level": "ERROR",
                 "num_gpus": 1,
@@ -283,8 +232,8 @@ if __name__ == "__main__":
                 "num_envs_per_worker": 8,
                 "compress_observations": False,
                 "gamma": .99,
-
-
+        
+        
                 "lambda": 0.95,
                 "kl_coeff": 0.5,
                 "clip_rewards": True,
@@ -297,9 +246,9 @@ if __name__ == "__main__":
                 "num_sgd_iter": 10,
                 "batch_mode": 'truncate_episodes',
                 "vf_share_layers": True,
-
+        
                 # Method specific
-
+        
                 "multiagent": {
                     "policies": policies,
                     "policy_mapping_fn": (
@@ -315,10 +264,10 @@ if __name__ == "__main__":
             stop={"episodes_total": 60000},
             checkpoint_freq=10,
             config={
-
+        
                 # Enviroment specific
                 "env": "pursuit",
-
+        
                 # General
                 "log_level": "ERROR",
                 "num_gpus": 1,
@@ -330,7 +279,7 @@ if __name__ == "__main__":
                 "sample_batch_size": 20,
                 "train_batch_size": 512,
                 "gamma": .99,
-
+        
                 # Method specific
                 "num_atoms": 51,
                 "dueling": True,
@@ -347,7 +296,7 @@ if __name__ == "__main__":
                 # based on expected return
                 "v_min": 0,
                 "v_max": 1500,
-
+        
                 "multiagent": {
                     "policies": policies,
                     "policy_mapping_fn": (

@@ -25,26 +25,26 @@ class MLPModel(Model):
 # DQN and Apex-DQN do not work with continuous actions
 if __name__ == "__main__":
 
-    methods = ["A2C", "APEX_DDPG", "DDPG", "IMPALA", "PPO", "SAC", "TD3", "MADDPG"]
-
+    methods = ["A2C", "APEX_DDPG", "DDPG", "IMPALA", "PPO", "SAC", "TD3"]
+    
     assert len(sys.argv) == 2, "Input the learning method as the second argument"
     method = sys.argv[1]
     assert method in methods, "Method should be one of {}".format(methods)
-
+    
     # ray.init()
-
+    
     ModelCatalog.register_custom_model("MLPModel", MLPModel)
-
+    
     # multiwalker
     def env_creator(args):
         return multiwalker.env()
-
+    
     env = env_creator(1)
     register_env("multiwalker", env_creator)
-
+    
     obs_space = env.observation_space_dict[0]  # gym.spaces.Box(low=0, high=1, shape=(148,), dtype=np.float32)
     act_space = env.action_space_dict[0]  # gym.spaces.Discrete(5)
-
+    
     def gen_policy(i):
         config = {
             "model": {
@@ -53,7 +53,7 @@ if __name__ == "__main__":
             "gamma": 0.99,
         }
         return (None, obs_space, act_space, config)
-
+    
     policies = {"policy_0": gen_policy(0)}
     policy_ids = list(policies.keys())
 
@@ -63,10 +63,10 @@ if __name__ == "__main__":
             stop={"episodes_total": 60000},
             checkpoint_freq=10,
             config={
-
+        
                 # Enviroment specific
                 "env": "multiwalker",
-
+        
                 # General
                 "log_level": "ERROR",
                 "num_gpus": 1,
@@ -76,11 +76,11 @@ if __name__ == "__main__":
                 "sample_batch_size": 20,
                 "train_batch_size": 512,
                 "gamma": .99,
-
+        
                 "lr_schedule": [[0, 0.0007],[20000000, 0.000000000001]],
-
+        
                 # Method specific
-
+        
                 "multiagent": {
                     "policies": policies,
                     "policy_mapping_fn": (
@@ -88,54 +88,17 @@ if __name__ == "__main__":
                 },
             },
         )
-    elif method == "MADDPG":
 
-        tune.run(
-            "contrib/MADDPG",
-            stop={"episodes_total": 60000},
-            checkpoint_freq=100,
-            config={
-                "env": "multiwalker",
-                "log_level": "INFO",
-                "num_gpus": 1,
-                "num_workers": 23,
-                "num_envs_per_worker": 8,
-                "learning_starts": 10000,
-                "buffer_size": int(1e6),
-                "compress_observations": True,
-                "sample_batch_size": 64,
-                "train_batch_size": 512,
-                "gamma": .99,
-                "critic_lr": .001,
-                "actor_lr": .001,
-                "actor_hiddens": [400, 300],
-                "critic_hiddens": [400, 300],
-                #"learning_starts": 100,
-                "env_config": {
-                    "actions_are_logits": True,
-                },
-                "multiagent": {
-    "actor_hiddens": [64, 64],
-                    "policies": {
-                        f"pol{i+1}": (None, obs_space, act_space, {
-                            "agent_id": i,
-                            "custom_model": "MLPModel",
-                        }) for i in range(env.num_agents)
-                    },
-                    "policy_mapping_fn": lambda x: f"pol{x+1}",
-                },
-            }
-        )
     elif method == "APEX_DDPG":
         tune.run(
             "APEX_DDPG",
             stop={"episodes_total": 60000},
             checkpoint_freq=10,
             config={
-
+        
                 # Enviroment specific
                 "env": "multiwalker",
-
+        
                 # General
                 "log_level": "ERROR",
                 "num_gpus": 1,
@@ -147,7 +110,7 @@ if __name__ == "__main__":
                 "sample_batch_size": 20,
                 "train_batch_size": 512,
                 "gamma": .99,
-
+        
                 "n_step": 3,
                 "lr": .0001,
                 "exploration_fraction": .1,
@@ -156,9 +119,9 @@ if __name__ == "__main__":
                 "final_prioritized_replay_beta": 1.0,
                 "target_network_update_freq": 50000,
                 "timesteps_per_iteration": 25000,
-
+        
                 # Method specific
-
+        
                 "multiagent": {
                     "policies": policies,
                     "policy_mapping_fn": (
@@ -203,10 +166,10 @@ if __name__ == "__main__":
             stop={"episodes_total": 60000},
             checkpoint_freq=10,
             config={
-
+        
                 # Enviroment specific
                 "env": "multiwalker",
-
+        
                 # General
                 "log_level": "ERROR",
                 "num_gpus": 1,
@@ -216,12 +179,12 @@ if __name__ == "__main__":
                 "sample_batch_size": 20,
                 "train_batch_size": 512,
                 "gamma": .99,
-
+        
                 "clip_rewards": True,
                 "lr_schedule": [[0, 0.0005],[20000000, 0.000000000001]],
-
+        
                 # Method specific
-
+        
                 "multiagent": {
                     "policies": policies,
                     "policy_mapping_fn": (
@@ -236,10 +199,10 @@ if __name__ == "__main__":
             stop={"episodes_total": 60000},
             checkpoint_freq=10,
             config={
-
+        
                 # Enviroment specific
                 "env": "multiwalker",
-
+        
                 # General
                 "log_level": "ERROR",
                 "num_gpus": 1,
@@ -247,8 +210,8 @@ if __name__ == "__main__":
                 "num_envs_per_worker": 8,
                 "compress_observations": False,
                 "gamma": .99,
-
-
+        
+        
                 "lambda": 0.95,
                 "kl_coeff": 0.5,
                 "clip_rewards": True,
@@ -261,9 +224,9 @@ if __name__ == "__main__":
                 "num_sgd_iter": 10,
                 "batch_mode": 'truncate_episodes',
                 "vf_share_layers": True,
-
+        
                 # Method specific
-
+        
                 "multiagent": {
                     "policies": policies,
                     "policy_mapping_fn": (
@@ -278,10 +241,10 @@ if __name__ == "__main__":
             stop={"episodes_total": 60000},
             checkpoint_freq=10,
             config={
-
+        
                 # Enviroment specific
                 "env": "multiwalker",
-
+        
                 # General
                 "log_level": "ERROR",
                 "num_gpus": 1,
@@ -293,7 +256,7 @@ if __name__ == "__main__":
                 "sample_batch_size": 20,
                 "train_batch_size": 512,
                 "gamma": .99,
-
+        
                 "horizon": 200,
                 "soft_horizon": False,
                 "Q_model": {
@@ -318,7 +281,7 @@ if __name__ == "__main__":
                 "normalize_actions": False,
                 "evaluation_interval": 1,
                 "metrics_smoothing_episodes": 5,
-
+        
                 "multiagent": {
                     "policies": policies,
                     "policy_mapping_fn": (
@@ -333,10 +296,10 @@ if __name__ == "__main__":
             stop={"episodes_total": 60000},
             checkpoint_freq=10,
             config={
-
+        
                 # Enviroment specific
                 "env": "multiwalker",
-
+        
                 # General
                 "log_level": "ERROR",
                 "num_gpus": 1,
@@ -348,12 +311,12 @@ if __name__ == "__main__":
                 "sample_batch_size": 20,
                 "train_batch_size": 512,
                 "gamma": .99,
-
+        
                 "critic_hiddens": [256, 256],
                 "pure_exploration_steps": 5000,
-
+        
                 # Method specific
-
+        
                 "multiagent": {
                     "policies": policies,
                     "policy_mapping_fn": (
@@ -361,3 +324,4 @@ if __name__ == "__main__":
                 },
             },
         )
+
