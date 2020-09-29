@@ -14,6 +14,7 @@ cloudpickle==1.2.2
 colorama==0.4.3
 cycler==0.10.0
 decorator==4.4.0
+dm-tree==0.1.5
 filelock==3.0.12
 funcsigs==1.0.2
 future==0.18.1
