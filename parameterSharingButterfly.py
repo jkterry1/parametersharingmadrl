@@ -9,7 +9,7 @@ from ray.rllib.models import Model, ModelCatalog
 from ray.tune.registry import register_env
 from ray.rllib.utils import try_import_tf
 import pettingzoo
-from pettingzoo.butterfly import prospector_v1, pistonball_v0, knights_archers_zombies_v2, pistonball_v0, cooperative_pong_v1
+from pettingzoo.butterfly import prospector_v1, pistonball_v0, knights_archers_zombies_v2, pistonball_v0, cooperative_pong_v1, prison_v1
 import supersuit
 from ray.rllib.models.tf.misc import normc_initializer
 from ray.rllib.models.tf.tf_modelv2 import TFModelV2
@@ -104,10 +104,11 @@ def make_env_creator(env_constr):
         env = supersuit.resize_v0(env,resize_size, resize_size, linear_interp=True)
         env = supersuit.color_reduction_v0(env)
         env = supersuit.pad_action_space_v0(env)
+        env = supersuit.pad_observation_space_v0(env)
         # env = supersuit.frame_stack_v0(env,2)
         env = supersuit.dtype_v0(env, np.float32)
         env = supersuit.normalize_obs_v0(env)
-        if model == "MLPModel":
+        if model == "MLPModelV2":
             env = supersuit.flatten_v0(env)
         env = ParallelPettingZooEnv(env)
         return env
@@ -126,10 +127,14 @@ if __name__ == "__main__":
         model = "MLPModelV2"
     elif env_name == "prospector":
         env_constr = prospector_v1
-        method = "APEX"
+        method = "PPO"
         model = None
     elif env_name == "pong":
         env_constr = cooperative_pong_v1
+        method = "APEX"
+        model = "MLPModelV2"
+    elif env_name == "prison":
+        env_constr = prison_v1
         method = "APEX"
         model = "MLPModelV2"
     else:
