@@ -118,20 +118,20 @@ if __name__ == "__main__":
     env_name = sys.argv[1]
     if env_name == "KAZ":
         env_constr = knights_archers_zombies_v2
-        method = "PPO"
+        method = "APEX"
         model = None
     elif env_name == "pistonball":
         env_constr = pistonball_v0
-        method = "PPO"
-        model = "MLPModel"
+        method = "APEX"
+        model = "MLPModelV2"
     elif env_name == "prospector":
         env_constr = prospector_v1
-        method = "PPO"
+        method = "APEX"
         model = None
     elif env_name == "pong":
         env_constr = cooperative_pong_v1
-        method = "PPO"
-        model = "MLPModel"
+        method = "APEX"
+        model = "MLPModelV2"
     else:
         assert False, "argv"
 
@@ -211,7 +211,7 @@ if __name__ == "__main__":
         tune.run(
             "APEX",
             name="ADQN-"+env_name,
-            stop={"episodes_total": 20000},
+            stop={"episodes_total": 50000},
             checkpoint_freq=10,
             #local_dir="~/ray_results_atari/"+env_name,
             config={
@@ -240,12 +240,12 @@ if __name__ == "__main__":
                 "num_gpus": 1,
 
                 "log_level": "ERROR",
-                "num_workers": 5,
-                "num_envs_per_worker": 6,
+                "num_workers": 12,
+                "num_envs_per_worker": 4,
                 "rollout_fragment_length": 32,
                 "train_batch_size": 512,
                 "target_network_update_freq": 10000,
-                "timesteps_per_iteration": 10000,
+                "timesteps_per_iteration": 15000,
                 "learning_starts": 10000,
                 "compress_observations": False,
                 "gamma": 0.99,
