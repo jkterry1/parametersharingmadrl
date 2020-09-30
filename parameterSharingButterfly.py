@@ -169,7 +169,7 @@ if __name__ == "__main__":
         tune.run(
             method,
             name="PPO-"+env_name,
-            stop={"episodes_total": 10000},
+            stop={"episodes_total": 50000},
             checkpoint_freq=10,
             config={
 
@@ -179,8 +179,8 @@ if __name__ == "__main__":
                 # General
                 "log_level": "INFO",
                 "num_gpus": 0,
-                "num_workers": 5,
-                "num_envs_per_worker": 8,
+                "num_workers": 12,
+                "num_envs_per_worker": 4,
                 "compress_observations": False,
                 "gamma": .99,
                 "lambda": 0.95,
