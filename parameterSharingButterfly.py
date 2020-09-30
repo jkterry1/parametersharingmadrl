@@ -104,7 +104,7 @@ def make_env_creator(env_constr):
         env = supersuit.resize_v0(env,resize_size, resize_size, linear_interp=True)
         env = supersuit.color_reduction_v0(env)
         env = supersuit.pad_action_space_v0(env)
-        env = supersuit.pad_observation_space_v0(env)
+        env = supersuit.pad_observations_v0(env)
         # env = supersuit.frame_stack_v0(env,2)
         env = supersuit.dtype_v0(env, np.float32)
         env = supersuit.normalize_obs_v0(env)
