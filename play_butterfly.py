@@ -17,9 +17,10 @@ from ray.rllib.models.tf.tf_modelv2 import TFModelV2
 from ray.rllib.utils import try_import_tf
 import sys
 import matplotlib.pyplot as plt
-from pettingzoo.butterfly import prospector_v1, pistonball_v0, knights_archers_zombies_v2
+from pettingzoo.butterfly import prospector_v1, pistonball_v0, knights_archers_zombies_v2, cooperative_pong_v1
 from pettingzoo_env import ParallelPettingZooEnv
 from parameterSharingButterfly import make_env_creator
+import parameterSharingButterfly
 import ray.rllib.agents.ddpg as ddpg  # TD3Trainer
 import ray.rllib.agents.ddpg.td3 as td3  # TD3Trainer
 
@@ -31,15 +32,28 @@ tf = try_import_tf()
 env_name = sys.argv[1]
 if env_name == "KAZ":
     env_constr = knights_archers_zombies_v2
-    algorithm = "PPO"
+    method = "APEX"
+    model = None
 elif env_name == "pistonball":
     env_constr = pistonball_v0
-    algorithm = "PPO"
+    method = "APEX"
+    model = "MLPModelV2"
 elif env_name == "prospector":
     env_constr = prospector_v1
-    algorithm = "PPO"
+    method = "PPO"
+    model = None
+elif env_name == "pong":
+    env_constr = cooperative_pong_v1
+    method = "APEX"
+    model = "MLPModelV2"
+elif env_name == "prison":
+    env_constr = prison_v1
+    method = "APEX"
+    model = "MLPModelV2"
 else:
     assert False, "argv"
+parameterSharingButterfly.model = model
+algorithm = method if method != "APEX" else "ADQN"
 data_path = sys.argv[2]
 checkpoint_number = int(sys.argv[3])
 
@@ -59,6 +73,9 @@ config_path = os.path.dirname(checkpoint_path)
 config_path = os.path.join(config_path, "../params.pkl")
 with open(config_path, "rb") as f:
     config = pickle.load(f)
+    config["num_workers"] = 1
+    config["num_gpus"] = 0
+
 
 if algorithm == 'A2C':
     RLAgent = a2c.A2CTrainer(env=env_name, config=config)
@@ -100,7 +117,7 @@ for j in range(num_runs):
             action_dict[agent_id] = action
 
         observations, rewards, dones, info = env.step(action_dict)
-        #env.render()
+        env.render()
         totalReward += sum(rewards.values())
         done = any(list(dones.values()))
         # if sum(rewards.values()) > 0:

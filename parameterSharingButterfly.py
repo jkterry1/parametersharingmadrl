@@ -13,7 +13,7 @@ from pettingzoo.butterfly import prospector_v1, pistonball_v0, knights_archers_z
 import supersuit
 from ray.rllib.models.tf.misc import normc_initializer
 from ray.rllib.models.tf.tf_modelv2 import TFModelV2
-from pettingzoo_env import ParallelPettingZooEnv
+from pettingzoo_env import PettingZooEnv
 import tensorflow as tf
 
 
@@ -99,7 +99,7 @@ ModelCatalog.register_custom_model("AtariModel", AtariModel)
 
 def make_env_creator(env_constr):
     def env_creator(args):
-        env = env_constr.parallel_env()#killable_knights=False, killable_archers=False)
+        env = env_constr.env()#killable_knights=False, killable_archers=False)
         resize_size = 84 if model == None else 32
         env = supersuit.resize_v0(env,resize_size, resize_size, linear_interp=True)
         env = supersuit.color_reduction_v0(env)
@@ -110,7 +110,7 @@ def make_env_creator(env_constr):
         env = supersuit.normalize_obs_v0(env)
         if model == "MLPModelV2":
             env = supersuit.flatten_v0(env)
-        env = ParallelPettingZooEnv(env)
+        env = PettingZooEnv(env)
         return env
     return env_creator
 
@@ -178,7 +178,7 @@ if __name__ == "__main__":
 
                 # General
                 "log_level": "INFO",
-                "num_gpus": 0,
+                "num_gpus": 1,
                 "num_workers": 12,
                 "num_envs_per_worker": 4,
                 "compress_observations": False,
@@ -189,8 +189,8 @@ if __name__ == "__main__":
                 "clip_param": 0.1,
                 "vf_clip_param": 10.0,
                 "entropy_coeff": 0.01,
-                "train_batch_size": 20000,
-                "sample_batch_size": 100,
+                "train_batch_size": 5000,
+                "sample_batch_size": 25,
                 "sgd_minibatch_size": 256,
                 "num_sgd_iter": 100,
                 "batch_mode": 'truncate_episodes',
