@@ -32,7 +32,7 @@ data = df.to_numpy()
 filtered = scipy.signal.savgol_filter(data[:, 1], int(len(data[:, 1])/30)+1, 5)
 plt.plot(data[:, 0], filtered, label='MADDPG', linewidth=0.6, color='tab:orange', linestyle='-')
 
-df = pd.read_csv(os.path.join('qmix_results/waterworld', 'cout.txt.csv'))
+df = pd.read_csv(os.path.join('qmix_results/waterworld', 'coutfull.txt.csv'))
 df = df[['episode', "return_mean"]]
 data = df.to_numpy()
 filtered = scipy.signal.savgol_filter(data[:, 1]*5, int(len(data[:, 1])/30)+2, 5)

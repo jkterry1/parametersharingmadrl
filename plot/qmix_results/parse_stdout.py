@@ -20,7 +20,7 @@ lines = []
 headers = list(key_values)
 lines.append(",".join(headers))
 #print((key_values[headers[2d]]))
-for i in range(len(key_values[headers[0]])-1):
+for i in range(len(key_values[headers[0]])-2):
     lines.append(",".join(str(key_values[head][i]) for head in headers))
 
 with open(fname+".csv",'w') as out_file:
