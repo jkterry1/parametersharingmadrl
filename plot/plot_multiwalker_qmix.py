@@ -17,40 +17,6 @@ plt.rcParams.update({
     "pgf.rcfonts": False
 });
 
-
-colors = {'gupta_ddpg': 'grey',
-        'gupta_trpo': 'black',
-        'rainbow_dqn': 'tab:blue',
-        'ppo': 'tab:orange',
-        'impala': 'tab:green',
-        'apex_dqn': 'tab:brown',
-        'a2c': 'tab:purple',
-        'apex_ddpg': 'tab:brown',
-        'sac': 'tab:pink',
-        'td3': 'tab:olive',
-        'dqn': 'tab:cyan',
-        'ddpg': 'steelblue',
-        'maddpg': 'grey',
-        'random': 'red'
-        }
-
-linestyles = {'gupta_ddpg': 'solid',
-        'gupta_trpo': (0, (1, 1)),
-        'rainbow_dqn': (0, (3, 3)),
-        'ppo': (0, (5, 2, 1, 2)),
-        'impala': 'solid',
-        'apex_dqn': (0, (1, 1)),
-        'a2c': (0, (3, 3)),
-        'apex_ddpg': (0, (5, 2, 1, 2)),
-        'sac': 'solid',
-        'td3': (0, (1, 1)),
-        'dqn': (0, (3, 3)),
-        'ddpg': (0, (5, 2, 1, 2)),
-        'maddpg': 'solid',
-        'random': (0, (1, 1))
-        }
-
-
 plt.figure(figsize=(2.65, 1.5))
 data_path = "data/multi_walker/"
 
@@ -66,11 +32,11 @@ data = df.to_numpy()
 filtered = scipy.signal.savgol_filter(data[:, 1], int(len(data[:, 1])/30)+1, 5)
 plt.plot(data[:, 0], filtered, label='MADDPG', linewidth=0.6, color='tab:orange', linestyle='-')
 
-df = pd.read_csv(os.path.join('qmix_results/multiwalker', 'coutfull.txt.csv''))
-df = df[['episode', "return_mean"]]
-data = df.to_numpy()
-filtered = scipy.signal.savgol_filter(data[:, 1]*3, int(len(data[:, 1])/30)+1, 5)
-plt.plot(data[:, 0], filtered, label='QMIX', linewidth=0.6, color='tab:green', linestyle='-')
+# df = pd.read_csv(os.path.join('qmix_results/multiwalker', 'coutfull.txt.csv''))
+# df = df[['episode', "return_mean"]]
+# data = df.to_numpy()
+# filtered = scipy.signal.savgol_filter(data[:, 1]*3, int(len(data[:, 1])/30)+1, 5)
+# plt.plot(data[:, 0], filtered, label='QMIX', linewidth=0.6, color='tab:green', linestyle='-')
 
 #plt.plot(np.array([0,60000]),np.array([-102.05,-102.05]), label='Random', linewidth=0.6, color='red', linestyle=(0, (1, 1)))
 
