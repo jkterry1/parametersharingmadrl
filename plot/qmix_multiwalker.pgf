@@ -6,10 +6,17 @@
 %% Make sure the required packages are loaded in your preamble
 %%   \usepackage{pgf}
 %%
+%% and, on pdftex
+%%   \usepackage[utf8]{inputenc}\DeclareUnicodeCharacter{2212}{-}
+%%
+%% or, on luatex and xetex
+%%   \usepackage{unicode-math}
+%%
 %% Figures using additional raster images can only be included by \input if
 %% they are in the same directory as the main LaTeX file. For loading figures
 %% from other directories you can use the `import` package
 %%   \usepackage{import}
+%%
 %% and then include the figures with
 %%   \import{<path to file>}{<filename>.pgf}
 %%
@@ -207,7 +214,7 @@
 \definecolor{textcolor}{rgb}{0.000000,0.000000,0.000000}%
 \pgfsetstrokecolor{textcolor}%
 \pgfsetfillcolor{textcolor}%
-\pgftext[x=0.112963in,y=0.694079in,left,base]{\color{textcolor}\rmfamily\fontsize{4.000000}{4.800000}\selectfont -150}%
+\pgftext[x=0.112963in, y=0.694079in, left, base]{\color{textcolor}\rmfamily\fontsize{4.000000}{4.800000}\selectfont -150}%
 \end{pgfscope}%
 \begin{pgfscope}%
 \pgfsetbuttcap%
@@ -232,7 +239,7 @@
 \definecolor{textcolor}{rgb}{0.000000,0.000000,0.000000}%
 \pgfsetstrokecolor{textcolor}%
 \pgfsetfillcolor{textcolor}%
-\pgftext[x=0.112963in,y=0.876057in,left,base]{\color{textcolor}\rmfamily\fontsize{4.000000}{4.800000}\selectfont -100}%
+\pgftext[x=0.112963in, y=0.876057in, left, base]{\color{textcolor}\rmfamily\fontsize{4.000000}{4.800000}\selectfont -100}%
 \end{pgfscope}%
 \begin{pgfscope}%
 \pgfsetbuttcap%
@@ -257,7 +264,7 @@
 \definecolor{textcolor}{rgb}{0.000000,0.000000,0.000000}%
 \pgfsetstrokecolor{textcolor}%
 \pgfsetfillcolor{textcolor}%
-\pgftext[x=0.160225in,y=1.058036in,left,base]{\color{textcolor}\rmfamily\fontsize{4.000000}{4.800000}\selectfont -50}%
+\pgftext[x=0.160225in, y=1.058036in, left, base]{\color{textcolor}\rmfamily\fontsize{4.000000}{4.800000}\selectfont -50}%
 \end{pgfscope}%
 \begin{pgfscope}%
 \pgfsetbuttcap%
@@ -282,7 +289,7 @@
 \definecolor{textcolor}{rgb}{0.000000,0.000000,0.000000}%
 \pgfsetstrokecolor{textcolor}%
 \pgfsetfillcolor{textcolor}%
-\pgftext[x=0.240280in,y=1.240014in,left,base]{\color{textcolor}\rmfamily\fontsize{4.000000}{4.800000}\selectfont 0}%
+\pgftext[x=0.240280in, y=1.240014in, left, base]{\color{textcolor}\rmfamily\fontsize{4.000000}{4.800000}\selectfont 0}%
 \end{pgfscope}%
 \begin{pgfscope}%
 \definecolor{textcolor}{rgb}{0.000000,0.000000,0.000000}%

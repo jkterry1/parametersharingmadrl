@@ -32,11 +32,11 @@ data = df.to_numpy()
 filtered = scipy.signal.savgol_filter(data[:, 1], int(len(data[:, 1])/30)+1, 5)
 plt.plot(data[:, 0], filtered, label='MADDPG', linewidth=0.6, color='tab:orange', linestyle='-')
 
-# df = pd.read_csv(os.path.join('qmix_results/pursuit', 'coutfull.txt.csv'))
-# df = df[['episode', "return_mean"]]
-# data = df.to_numpy()
-# filtered = scipy.signal.savgol_filter(data[:, 1]*8, int(len(data[:, 1])/30)+2, 5)
-# plt.plot(data[:, 0], filtered, label='QMIX', linewidth=0.6, color='tab:green', linestyle='-')
+df = pd.read_csv(os.path.join('qmix_results/pursuit', 'coutfull.txt.csv'))
+df = df[['episode', "return_mean"]]
+data = df.to_numpy()
+filtered = scipy.signal.savgol_filter(data[:, 1]*8, int(len(data[:, 1])/30)+2, 5)
+plt.plot(data[:, 0], filtered, label='QMIX', linewidth=0.6, color='tab:green', linestyle='-')
 
 #plt.plot(np.array([0,60000]),np.array([-102.05,-102.05]), label='Random', linewidth=0.6, color='red', linestyle=(0, (1, 1)))
 

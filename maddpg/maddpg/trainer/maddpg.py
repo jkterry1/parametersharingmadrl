@@ -144,7 +144,7 @@ class MADDPGAgentTrainer(AgentTrainer):
             num_units=args.num_units
         )
         # Create experience buffer
-        self.replay_buffer = ReplayBuffer(1e6)
+        self.replay_buffer = ReplayBuffer(1e5)
         self.max_replay_buffer_len = args.batch_size * args.max_episode_len
         self.replay_sample_index = None
 
@@ -161,7 +161,7 @@ class MADDPGAgentTrainer(AgentTrainer):
     def update(self, agents, t):
         if len(self.replay_buffer) < self.max_replay_buffer_len: # replay buffer is not large enough
             return
-        if not t % 100 == 0:  # only update every 100 steps
+        if not t % 4 == 0:  # only update every 100 steps
             return
 
         self.replay_sample_index = self.replay_buffer.make_index(self.args.batch_size)
